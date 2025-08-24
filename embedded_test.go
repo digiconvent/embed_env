@@ -1,9 +1,9 @@
-package embedded_test
+package embed_env_test
 
 import (
 	"testing"
 
-	"github.com/DigiConvent/embed_env/embedded"
+	"github.com/DigiConvent/embed_env"
 )
 
 type someType struct {
@@ -15,7 +15,7 @@ type someType struct {
 
 func TestGetRawEmbeddedData(t *testing.T) {
 	a := someType{A: "text", B: "test2", C: -23, D: true}
-	result, err := embedded.ReadEmbeddedData(embedded.Uri(), embedded.Delimiter)
+	result, err := embed_env.ReadEmbeddedData(embed_env.Uri(), embed_env.Delimiter)
 	if err != nil {
 		t.Log(err)
 	}
@@ -23,14 +23,13 @@ func TestGetRawEmbeddedData(t *testing.T) {
 		t.Fatal("Expected no embedded data")
 	}
 
-	embedded.WriteEmbeddedData(embedded.Uri(), embedded.Delimiter, a)
+	embed_env.WriteEmbeddedData(embed_env.Uri(), embed_env.Delimiter, a)
 
-	result, err = embedded.ReadEmbeddedData(embedded.Uri(), embedded.Delimiter)
+	result, err = embed_env.ReadEmbeddedData(embed_env.Uri(), embed_env.Delimiter)
 	if err != nil {
 		t.Log(err)
 	}
 	if result == "" {
 		t.Fatal("Expected embedded data")
 	}
-	t.Log(result)
 }

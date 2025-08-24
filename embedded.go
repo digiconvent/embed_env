@@ -1,4 +1,4 @@
-package embedded
+package embed_env
 
 import (
 	"bytes"
