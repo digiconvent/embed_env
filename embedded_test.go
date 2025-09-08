@@ -3,7 +3,7 @@ package embed_env_test
 import (
 	"testing"
 
-	"github.com/DigiConvent/embed_env"
+	"github.com/digiconvent/embed_env"
 )
 
 type someType struct {

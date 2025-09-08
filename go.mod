@@ -1,3 +1,3 @@
-module github.com/DigiConvent/embed_env
+module github.com/digiconvent/embed_env
 
 go 1.24.4
