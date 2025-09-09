@@ -1,4 +1,4 @@
-package embed_env
+package embed_env_internal
 
 import (
 	"errors"

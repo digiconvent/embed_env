@@ -1,6 +1,7 @@
-package embed_env
+package embed_env_internal
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"reflect"
@@ -11,10 +12,14 @@ import (
 
 func ToQuery(someStruct any) (string, error) {
 	v := reflect.ValueOf(someStruct)
-	t := reflect.TypeOf(someStruct)
+	t := v.Type()
 
+	if t.Kind() == reflect.Pointer {
+		v = v.Elem()
+		t = v.Type()
+	}
 	if t.Kind() != reflect.Struct {
-		return "", fmt.Errorf("StructToQuery: expected struct but got %s", t.Kind())
+		return "", errors.New("should be of type struct")
 	}
 
 	var params []string
@@ -52,8 +57,13 @@ func FromQuery(someStruct any, query *string) error {
 		return err
 	}
 
-	v := reflect.ValueOf(someStruct).Elem()
-	t := v.Type()
+	v := reflect.ValueOf(someStruct)
+	t := reflect.TypeOf(someStruct)
+
+	if t.Kind() == reflect.Ptr {
+		v = v.Elem()
+		t = v.Type()
+	}
 
 	for i := range t.NumField() {
 		field := t.Field(i)
