@@ -1,12 +1,14 @@
 package embed_env_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/digiconvent/embed_env"
 )
 
 func TestMain(t *testing.T) {
+	thisBinary, _ := os.Executable()
 	// make up some struct with data
 	type SomeStruct struct {
 		Name string `name:"name"`
@@ -20,7 +22,7 @@ func TestMain(t *testing.T) {
 		Male: true,
 	}
 
-	err := embed_env.ReadFromBinary(testInstance, "")
+	err := embed_env.ReadFromBinary(thisBinary, testInstance, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,7 +43,7 @@ func TestMain(t *testing.T) {
 		Male: false,
 	}
 
-	err = embed_env.ReadFromBinary(testInstance2, "")
+	err = embed_env.ReadFromBinary(thisBinary, testInstance2, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -53,7 +55,7 @@ func TestMain(t *testing.T) {
 	}
 	t.Log("Passed [read existing data]")
 
-	err = embed_env.ReadFromBinary(testInstance2, "name=Annie+Hughes&age=38&male=false")
+	err = embed_env.ReadFromBinary(thisBinary, testInstance2, "name=Annie+Hughes&age=38&male=false")
 	if err != nil {
 		t.Fatal("did not expect err, instead got", err.Error())
 	}

@@ -8,7 +8,7 @@ import (
 
 // pass a pointer to your struct struct and name the individual fields using tags like `name:"some_env_name"`
 // fields should only use primitive values
-func ReadFromBinary(someStruct any, preset string) error {
+func ReadFromBinary(binaryUri string, someStruct any, preset string) error {
 	thisBinary, err := os.Executable()
 	if err != nil {
 		return err
