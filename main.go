@@ -1,7 +1,6 @@
 package embed_env
 
 import (
-	"fmt"
 	"os"
 
 	embed_env_internal "github.com/digiconvent/embed_env/internal"
@@ -16,12 +15,10 @@ func ReadFromBinary(someStruct any, preset string) error {
 	}
 	var query string = preset
 	if query == "" {
-		query, err = embed_env_internal.ReadEmbeddedData(thisBinary, embed_env_internal.Delimiter)
+		query, err = ReadEmbeddedData(thisBinary)
 		if err != nil {
 			return err
 		}
-	} else {
-		fmt.Println("using preset ", preset)
 	}
 
 	if query == "" {
@@ -34,4 +31,13 @@ func ReadFromBinary(someStruct any, preset string) error {
 // this parameter should be a pointer to the struct which contains the data which you want to embed
 func WriteToBinary(someStruct any) error {
 	return embed_env_internal.WriteEmbeddedData(embed_env_internal.Uri(), embed_env_internal.Delimiter, someStruct)
+}
+
+// binary uri to scan for embedded data. This function can be used to scan the embedded data from another digiconvent binary
+func ReadEmbeddedData(binPath string) (string, error) {
+	query, err := embed_env_internal.ReadEmbeddedData(binPath, embed_env_internal.Delimiter)
+	if err != nil {
+		return "", err
+	}
+	return query, nil
 }
