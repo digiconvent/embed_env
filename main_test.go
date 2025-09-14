@@ -20,7 +20,7 @@ func TestMain(t *testing.T) {
 		Male: true,
 	}
 
-	err := embed_env.ReadFromBinary(testInstance)
+	err := embed_env.ReadFromBinary(testInstance, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,7 +41,7 @@ func TestMain(t *testing.T) {
 		Male: false,
 	}
 
-	err = embed_env.ReadFromBinary(testInstance2)
+	err = embed_env.ReadFromBinary(testInstance2, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,4 +52,20 @@ func TestMain(t *testing.T) {
 		t.Fatal("should not be the same instance")
 	}
 	t.Log("Passed [read existing data]")
+
+	err = embed_env.ReadFromBinary(testInstance2, "name=Annie+Hughes&age=38&male=false")
+	if err != nil {
+		t.Fatal("did not expect err, instead got", err.Error())
+	}
+
+	if testInstance2.Name != "Annie Hughes" {
+		t.Fatal("expected name to be Annie Hughes, instead got", testInstance2.Name)
+	}
+	if testInstance2.Age != 38 {
+		t.Fatal("expected age to be 38, instead got", testInstance2.Age)
+	}
+	if testInstance2.Male {
+		t.Fatal("expected male to be false, instead got", testInstance2.Male)
+	}
+	t.Log("Passed [read from preset]")
 }
