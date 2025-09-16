@@ -24,8 +24,8 @@ func ReadEmbeddedData(uri, delimiter string) (string, error) {
 }
 
 // start at the end of a file, load contents as long until a \n is found
-func getLastLine(filename string) (string, error) {
-	file, err := os.Open(filename)
+func getLastLine(uri string) (string, error) {
+	file, err := os.Open(uri)
 	if err != nil {
 		return "", err
 	}
