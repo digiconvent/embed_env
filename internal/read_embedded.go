@@ -2,22 +2,65 @@ package embed_env_internal
 
 import (
 	"os"
+	"strings"
 )
 
 func ReadEmbeddedData(uri, delimiter string) (string, error) {
-	contents, err := os.ReadFile(uri)
+	lastLine, err := getLastLine(uri)
 	if err != nil {
 		return "", err
 	}
 
-	pos, err := GetDelimiterPositions(delimiter)
-	if err != nil {
-		return "", err
-	}
-
-	if len(pos) != 2 { // there are 2 positions where the delimiter occurs if there is embedded data
+	if strings.Count(lastLine, delimiter) == 0 {
 		return "", nil
 	}
 
-	return string(contents[pos[1]+len(delimiter):]), nil
+	if strings.Contains(lastLine, delimiter) {
+		segments := strings.Split(lastLine, delimiter)
+		return segments[len(segments)-1], nil
+	}
+
+	return "", nil
+}
+
+// start at the end of a file, load contents as long until a \n is found
+func getLastLine(filename string) (string, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	stat, err := file.Stat()
+	if err != nil {
+		return "", err
+	}
+
+	buf := make([]byte, 1024)
+	var lastLine string
+	var pos int64 = stat.Size()
+
+	for {
+		toRead := min(pos, int64(len(buf)))
+		pos -= toRead
+
+		_, err = file.ReadAt(buf[:toRead], pos)
+		if err != nil {
+			return "", err
+		}
+
+		for i := toRead - 1; i >= 0; i-- {
+			if buf[i] == '\n' {
+				if lastLine != "" {
+					return lastLine, nil
+				}
+				continue
+			}
+			lastLine = string(buf[i]) + lastLine
+		}
+
+		if pos == 0 {
+			return lastLine, nil
+		}
+	}
 }
