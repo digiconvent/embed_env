@@ -7,15 +7,12 @@ import (
 )
 
 func WriteEmbeddedData(uri, delimiter string, someStruct any) error {
-	locs, err := GetDelimiterPositions(delimiter)
+	lastLine, err := getLastLine(uri)
 	if err != nil {
 		return err
 	}
 
-	marker := 0
-	if len(locs) == 2 {
-		marker = locs[1] + len(delimiter)
-	}
+	hasEmbeddedData := strings.Contains(lastLine, delimiter)
 
 	data, err := ToQuery(someStruct)
 	if err != nil {
@@ -29,14 +26,20 @@ func WriteEmbeddedData(uri, delimiter string, someStruct any) error {
 	if err != nil {
 		return err
 	}
-	if marker == 0 {
-		marker = len(content)
-		data = delimiter + data
+
+	var newContent []byte
+	if hasEmbeddedData {
+		delimiterIndex := strings.Index(lastLine, delimiter)
+		if delimiterIndex != -1 {
+			bytesToRemove := len(lastLine) - delimiterIndex
+			newContent = content[:len(content)-bytesToRemove]
+		} else {
+			newContent = content
+		}
+		newContent = append(newContent, []byte(delimiter+data)...)
+	} else {
+		newContent = append(content, []byte(delimiter+data)...)
 	}
-
-	base := content[:marker]
-
-	newContent := append(base, []byte(data)...)
 
 	// delete myself
 	err = os.Remove(uri)
